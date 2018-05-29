@@ -1,0 +1,184 @@
+---
+swagger: "2.0"
+info:
+  description: "A sample API that uses a petstore as an example to demonstrate features\
+    \ in the swagger-2.0 specification"
+  version: "1.0.0"
+  title: "Swagger metrics"
+  termsOfService: "http://helloreverb.com/terms/"
+  contact:
+    name: "ISA Research Group"
+    url: "http://www.isa.us.es/"
+    email: "isagroup.us@gmail.com"
+  license:
+    name: "MIT"
+    url: "http://opensource.org/licenses/MIT"
+host: "localhost:5000"
+basePath: "/api/v1"
+schemes:
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /getBilling:
+    post:
+      description: "Resturn.."
+      operationId: "getBilling"
+      parameters:
+      - in: "body"
+        name: "rules"
+        description: "json of rules"
+        required: true
+        schema:
+          $ref: "#/definitions/Data"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Data"
+        400:
+          description: "Invalid Order"
+      x-swagger-router-controller: "Default"
+definitions:
+  Data:
+    properties:
+      metrics:
+        type: "array"
+        items:
+          $ref: "#/definitions/Fact"
+      from:
+        type: "string"
+        format: "date"
+      to:
+        type: "string"
+        format: "date"
+      rules:
+        type: "array"
+        items:
+          $ref: "#/definitions/Rul"
+    example:
+      from: "2000-01-23"
+      rules:
+      - conditions:
+          all:
+          - fact: "fact"
+            value: "value"
+            operator: "operator"
+          - fact: "fact"
+            value: "value"
+            operator: "operator"
+        event:
+          type: "type"
+          params:
+            fact: 6
+            message: "message"
+            value: 1
+      - conditions:
+          all:
+          - fact: "fact"
+            value: "value"
+            operator: "operator"
+          - fact: "fact"
+            value: "value"
+            operator: "operator"
+        event:
+          type: "type"
+          params:
+            fact: 6
+            message: "message"
+            value: 1
+      metrics:
+      - name: "name"
+        id: 0
+        url: "url"
+      - name: "name"
+        id: 0
+        url: "url"
+      to: "2000-01-23"
+  Fact:
+    properties:
+      name:
+        type: "string"
+      id:
+        type: "integer"
+        format: "int64"
+      url:
+        type: "string"
+    example:
+      name: "name"
+      id: 0
+      url: "url"
+  Rul:
+    properties:
+      conditions:
+        $ref: "#/definitions/ListCondition"
+      event:
+        $ref: "#/definitions/Event"
+    example:
+      conditions:
+        all:
+        - fact: "fact"
+          value: "value"
+          operator: "operator"
+        - fact: "fact"
+          value: "value"
+          operator: "operator"
+      event:
+        type: "type"
+        params:
+          fact: 6
+          message: "message"
+          value: 1
+  ListCondition:
+    properties:
+      all:
+        type: "array"
+        items:
+          $ref: "#/definitions/Condition"
+    example:
+      all:
+      - fact: "fact"
+        value: "value"
+        operator: "operator"
+      - fact: "fact"
+        value: "value"
+        operator: "operator"
+  Condition:
+    properties:
+      fact:
+        type: "string"
+      operator:
+        type: "string"
+      value:
+        type: "string"
+    example:
+      fact: "fact"
+      value: "value"
+      operator: "operator"
+  Event:
+    properties:
+      type:
+        type: "string"
+      params:
+        $ref: "#/definitions/params"
+    example:
+      type: "type"
+      params:
+        fact: 6
+        message: "message"
+        value: 1
+  params:
+    properties:
+      fact:
+        type: "string"
+      value:
+        type: "integer"
+        format: "int64"
+      message:
+        type: "string"
+    example:
+      fact: "fact"
+      message: "message"
+      value: 1
