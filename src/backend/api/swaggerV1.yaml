@@ -174,8 +174,7 @@ definitions:
       fact:
         type: "string"
       value:
-        type: "integer"
-        format: "int64"
+        type: "string"
       message:
         type: "string"
     example:

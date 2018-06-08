@@ -8,7 +8,6 @@ const Engine = require("json-rules-engine").Engine;
 
 const logger = require("../logger");
 
-
 /**
  * Return..
  *
@@ -17,7 +16,11 @@ const logger = require("../logger");
  **/
 exports.getBilling = function (rules) {
   return new Promise(function (resolve, reject) {
-    var engine = new Engine();
+    // var engine = new Engine();
+    var options = {
+      allowUndefinedFacts: true
+    };
+    var engine = new Engine([], options);
     var examples = {};
 
     // if (Object.keys(examples).length > 0) {
@@ -29,55 +32,43 @@ exports.getBilling = function (rules) {
       // almanac.factMap.set(event.params.fact, aux);
       // result.billing = almanac.factMap.get(event.params.fact).value;
       // result.messages.push(event.type + ' - ' + event.params.message);
-      logger.info('REWARD: ' + event.params.value);
+      logger.info("REWARD: " + event.params.value);
       // }
     });
-    engine.on('failure', event => {
-      logger.info('System' + ' haven´t '.red + ' ..... ' + event.type.underline + ' ' + event.params.message);
+    engine.on("failure", event => {
+      logger.info("System" + " haven´t ".red + " ..... " + event.type.underline + " " + event.params.message);
     });
     rules.rules.forEach(newRule => {
-      logger.info('New rule: ' + JSON.stringify(newRule));
+      logger.info("New rule: " + JSON.stringify(newRule));
       engine.addRule(newRule);
     });
 
     buildFacts(rules.metrics, rules.from, rules.to).then(newMetric => {
       logger.info("metrics: " + JSON.stringify(newMetric));
-      engine.run(newMetric).then((event) => {
+
+      engine.run(newMetric).then(event => {
         getResults(event).then(result => {
           return resolve(result);
         });
       });
+
     });
+
   });
 };
 
 function getResults(event) {
   return new Promise(function (resolve, reject) {
     var result = {
-      reward: 0,
-      penalties: 0,
+      percentage: 0,
       message: []
     };
     event.forEach(function (fact) {
-      switch (fact.type) {
-        case ("decrement-fact"):
-          result.reward += fact.params.value;
-          result.message.push(fact.params.message)
-          break;
-        case ("increment-fact"):
-          result.penalties += fact.params.value;
-          result.message.push(fact.params.message)
-          break;
-        case ("commitment"):
-          result.message.push(fact.params.message);
-          break;
-        default:
-          break;
-      }
+      result.percentage += parseInt(fact.params.value);
+      result.message.push(fact.params.message);
     });
     resolve(result);
   });
-
 }
 
 function buildFacts(metrics, from, to) {
@@ -87,17 +78,19 @@ function buildFacts(metrics, from, to) {
     metrics.forEach(newMetric => {
       apiResult.push(
         new Promise((resolve, reject) => {
-          logger.info('newMetric: ' + JSON.stringify(newMetric));
+          logger.info("newMetric: " + JSON.stringify(newMetric));
           var name = newMetric.name;
           getApi(newMetric.url, from, to).then(value => {
             newFact = newFact + ', "' + name + '" : ' + value;
             logger.info("facts: " + newFact);
             resolve(newFact);
           });
-        }));
+        })
+      );
     });
     Promise.all(apiResult).then(value => {
-      value = value[value.length - 1] + '}';
+      // value = value[value.length] + "}";
+      value = newFact + "}";
       value = JSON.parse(value);
       resolve(value);
     });
