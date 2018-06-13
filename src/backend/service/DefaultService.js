@@ -99,7 +99,12 @@ function buildFacts(metrics, from, to) {
 
 function getApi(url, from, to) {
   return new Promise(function (resolve, reject) {
-    var myUrl = url + "?from=" + from;
+    var myUrl = url.split("&")[0];
+    if (!!url.split("&")[1]) {
+      myUrl += "?from=" + from + "&" + url.split("&")[1];
+    } else {
+      myUrl += "?from=" + from;
+    }
     if (to) {
       myUrl = myUrl + "&to=" + to;
     }
