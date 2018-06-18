@@ -21,19 +21,10 @@ exports.getBilling = function (rules) {
       allowUndefinedFacts: true
     };
     var engine = new Engine([], options);
-    var examples = {};
 
-    // if (Object.keys(examples).length > 0) {
-    //   resolve(examples[Object.keys(examples)[0]]);
     engine.on("success", (event, almanac) => {
       logger.info("System" + " have ".green + "....." + event.type.underline + " " + event.params.message);
-      // if (event.type == "increment-fact") {
-      //   almanac.factMap.get(event.params.fact).value = almanac.factMap.get(event.params.fact).value + event.params.value;
-      // almanac.factMap.set(event.params.fact, aux);
-      // result.billing = almanac.factMap.get(event.params.fact).value;
-      // result.messages.push(event.type + ' - ' + event.params.message);
       logger.info("REWARD: " + event.params.value);
-      // }
     });
     engine.on("failure", event => {
       logger.info("System" + " haven´t ".red + " ..... " + event.type.underline + " " + event.params.message);
@@ -57,6 +48,10 @@ exports.getBilling = function (rules) {
   });
 };
 
+/**
+ * 
+ * @param {*} event 
+ */
 function getResults(event) {
   return new Promise(function (resolve, reject) {
     var result = {
@@ -71,6 +66,13 @@ function getResults(event) {
   });
 }
 
+
+/**
+ * 
+ * @param {*} metrics 
+ * @param {*} from 
+ * @param {*} to 
+ */
 function buildFacts(metrics, from, to) {
   return new Promise(function (resolve, reject) {
     var newFact = '{ "reward": 0 ';
@@ -89,7 +91,6 @@ function buildFacts(metrics, from, to) {
       );
     });
     Promise.all(apiResult).then(value => {
-      // value = value[value.length] + "}";
       value = newFact + "}";
       value = JSON.parse(value);
       resolve(value);
@@ -97,6 +98,12 @@ function buildFacts(metrics, from, to) {
   });
 }
 
+/**
+ * 
+ * @param {*} url 
+ * @param {*} from 
+ * @param {*} to 
+ */
 function getApi(url, from, to) {
   return new Promise(function (resolve, reject) {
     var myUrl = url.split("&")[0];
@@ -119,7 +126,7 @@ function getApi(url, from, to) {
           logger.info(err);
           reject(err);
         }
-        // logger.info(res.statusCode);
+        logger.info(body);
         if (body.response.value) {
           resolve(body.response.value);
         } else {
