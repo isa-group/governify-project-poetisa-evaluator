@@ -10,10 +10,6 @@ production:
     listenOnHttps: false
     diskMemory: 2000000000
     ramMemory:  20000000
-
-  data:
-    apiKuberntes: "http://192.168.65.3:6443/api/v1"
-    apiInfluxdb: "http://10.1.0.50:8086/query"
   
   log:
     level: info
@@ -33,10 +29,6 @@ development:
     listenOnHttps: false
     diskMemory: 2000000000
     ramMemory:  20000000
-  
-  data:
-    apiKuberntes: "http://localhost:8001/api/v1"
-    apiInfluxdb: "http://localhost:30086/query"
     
   log:
     level: debug
@@ -61,10 +53,6 @@ testing:
     ignore:
       - ''
       - ''
-  
-  data:
-    apiKuberntes: "http://localhost:8001/api/v1"
-    apiInfluxdb: "http://localhost:30086/query"
 
   log:
     level: debug

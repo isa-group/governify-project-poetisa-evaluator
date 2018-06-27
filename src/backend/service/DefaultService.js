@@ -126,7 +126,6 @@ function getApi(url, from, to) {
           logger.info(err);
           reject(err);
         }
-        logger.info(body);
         if (body.response.value) {
           resolve(body.response.value);
         } else {
