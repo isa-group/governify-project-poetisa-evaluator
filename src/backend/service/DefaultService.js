@@ -123,7 +123,7 @@ function getApi(url, from, to) {
       },
       (err, res, body) => {
         if (err) {
-          logger.info(err);
+           logger.info("GET <"+url+"> : "+err);
           reject(err);
         }
         if (body.response.value) {
