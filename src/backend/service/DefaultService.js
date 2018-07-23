@@ -7,6 +7,7 @@ const Promise = require("bluebird");
 const Engine = require("json-rules-engine").Engine;
 
 const logger = require("../logger");
+const influx = require('./Influx');
 
 /**
  * Return..
@@ -38,23 +39,24 @@ exports.getBilling = function (rules) {
       logger.info("metrics: " + JSON.stringify(newMetric));
 
       engine.run(newMetric).then(event => {
-        getResults(event).then(result => {
+        getResults(event, rules.from, rules.to).then(result => {
+          influx.writeInflux(result);
           return resolve(result);
         });
       });
-
     });
-
   });
 };
 
 /**
- * 
- * @param {*} event 
+ *
+ * @param {*} event
  */
-function getResults(event) {
+function getResults(event, from, to) {
   return new Promise(function (resolve, reject) {
     var result = {
+      from: from,
+      to: to,
       percentage: 0,
       message: []
     };
@@ -66,12 +68,11 @@ function getResults(event) {
   });
 }
 
-
 /**
- * 
- * @param {*} metrics 
- * @param {*} from 
- * @param {*} to 
+ *
+ * @param {*} metrics
+ * @param {*} from
+ * @param {*} to
  */
 function buildFacts(metrics, from, to) {
   return new Promise(function (resolve, reject) {
@@ -99,10 +100,10 @@ function buildFacts(metrics, from, to) {
 }
 
 /**
- * 
- * @param {*} url 
- * @param {*} from 
- * @param {*} to 
+ *
+ * @param {*} url
+ * @param {*} from
+ * @param {*} to
  */
 function getApi(url, from, to) {
   return new Promise(function (resolve, reject) {
@@ -123,9 +124,10 @@ function getApi(url, from, to) {
       },
       (err, res, body) => {
         if (err) {
-           logger.info("GET <"+url+"> : "+err);
+          logger.info("GET <" + url + "> : " + err);
           reject(err);
         }
+        logger.info("URL GET: " + myUrl);
         if (body.response.value) {
           resolve(body.response.value);
         } else {
