@@ -40,6 +40,7 @@ exports.getBilling = function (rules) {
 
       engine.run(newMetric).then(event => {
         getResults(event, rules.from, rules.to).then(result => {
+          logger.info("Write Influx");
           influx.writeInflux(result);
           return resolve(result);
         });
