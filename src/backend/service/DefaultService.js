@@ -7,7 +7,7 @@ const Promise = require("bluebird");
 const Engine = require("json-rules-engine").Engine;
 
 const logger = require("../logger");
-const influx = require('./Influx');
+const influx = require("./Influx");
 
 /**
  * Return..
@@ -15,8 +15,8 @@ const influx = require('./Influx');
  * rules Data json of rules
  * returns Data
  **/
-exports.getBilling = function (rules) {
-  return new Promise(function (resolve, reject) {
+exports.getBilling = function(rules) {
+  return new Promise(function(resolve, reject) {
     // var engine = new Engine();
     var options = {
       allowUndefinedFacts: true
@@ -37,12 +37,21 @@ exports.getBilling = function (rules) {
 
     buildFacts(rules.metrics, rules.from, rules.to).then(newMetric => {
       logger.info("metrics: " + JSON.stringify(newMetric));
-
+      var noData = [];
+      Object.keys(newMetric).forEach(key => {
+        if (newMetric[key] === -1) {
+          noData.push(key);
+        }
+      });
       engine.run(newMetric).then(event => {
-        getResults(event, rules.from, rules.to).then(result => {
+        getResults(event, rules.from, rules.to).then(resultANS => {
+          resultANS.noData = noData;
           logger.info("Write Influx");
-          influx.writeInflux(result);
-          return resolve(result);
+          influx.writeInflux(resultANS);
+          getbill(resultANS, rules.from, rules.to).then(result => {
+            // logger.info(result);
+            return resolve(result);
+          });
         });
       });
     });
@@ -54,14 +63,14 @@ exports.getBilling = function (rules) {
  * @param {*} event
  */
 function getResults(event, from, to) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     var result = {
       from: from,
       to: to,
       percentage: 0,
       message: []
     };
-    event.forEach(function (fact) {
+    event.forEach(function(fact) {
       result.percentage += parseInt(fact.params.value);
       result.message.push(fact.params.message);
     });
@@ -76,7 +85,7 @@ function getResults(event, from, to) {
  * @param {*} to
  */
 function buildFacts(metrics, from, to) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     var newFact = '{ "reward": 0 ';
     var apiResult = [];
     metrics.forEach(newMetric => {
@@ -85,7 +94,11 @@ function buildFacts(metrics, from, to) {
           logger.info("newMetric: " + JSON.stringify(newMetric));
           var name = newMetric.name;
           getApi(newMetric.url, from, to).then(value => {
-            newFact = newFact + ', "' + name + '" : ' + value;
+            if (value == "Please check the parameters, as no information is found ") {
+              newFact = newFact + ', "' + name + '" : -1';
+            } else {
+              newFact = newFact + ', "' + name + '" : ' + value;
+            }
             logger.info("facts: " + newFact);
             resolve(newFact);
           });
@@ -107,7 +120,7 @@ function buildFacts(metrics, from, to) {
  * @param {*} to
  */
 function getApi(url, from, to) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     var myUrl = url.split("&")[0];
     if (!!url.split("&")[1]) {
       myUrl += "?from=" + from + "&" + url.split("&")[1];
@@ -118,7 +131,34 @@ function getApi(url, from, to) {
       myUrl = myUrl + "&to=" + to;
     }
     logger.info("URL: " + myUrl);
-    request({
+    request(
+      {
+        method: "GET",
+        url: myUrl,
+        json: true
+      },
+      (err, res, body) => {
+        if (err) {
+          logger.info("GET <" + url + "> : " + err);
+          reject(err);
+        }
+        logger.info("URL GET: " + myUrl);
+        if (body.response.value) {
+          resolve(body.response.value);
+        } else {
+          resolve(body.response);
+        }
+      }
+    );
+  });
+}
+
+function getBill(resultANS, from, to) {}
+
+function getNM(from, to) {
+  return new Promise(function(resolve, reject) {
+    request(
+      {
         method: "GET",
         url: myUrl,
         json: true

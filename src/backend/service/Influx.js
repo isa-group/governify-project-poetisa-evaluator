@@ -26,7 +26,7 @@ function connectAndCreateInfluxDB(data) {
         console.log("Creating influxdb connection to %s", config.data.hostInflux);
         influx = new Influx.InfluxDB({
             host: config.data.hostInflux,
-            port: 8086,
+            port: config.data.portInflux,
             database: "k8s"
         });
         // Set up influx database
@@ -70,7 +70,7 @@ function checkMeasurement() {
 function functionInsertData(data) {
     influx = new Influx.InfluxDB({
         host: config.data.hostInflux,
-        port: 8086,
+        port: config.data.portInflux,
         database: "k8s",
         schema: [{
             measurement: "billing",

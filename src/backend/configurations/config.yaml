@@ -18,6 +18,7 @@ production:
     maxFiles: 30 # Max Files that can be created per day reaching the maxSize.
   data:
     hostInflux: "10.109.183.118:8086"
+    portInflux: 8086
 
 development:
   server:
@@ -37,6 +38,9 @@ development:
     file: "./logs/dev-logs.log" #Where log file will be saved. Date will be concatenated before the name.
     maxSize: 10000000 #(10MB) Maximum file log size, if one file reaches it, a new file is created.
     maxFiles: 30 # Max Files that can be created per day reaching the maxSize.
+  data:
+    hostInflux: "localhost:30086"
+    portInflux: 30086
 
 testing:
   server:
