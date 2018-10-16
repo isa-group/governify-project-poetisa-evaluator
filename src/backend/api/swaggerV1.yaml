@@ -1,10 +1,9 @@
----
 swagger: "2.0"
 info:
   description: "A sample API that uses a petstore as an example to demonstrate features\
     \ in the swagger-2.0 specification"
   version: "1.0.0"
-  title: "Swagger metrics"
+  title: "Swagger SLO evaluating"
   termsOfService: "http://helloreverb.com/terms/"
   contact:
     name: "ISA Research Group"
@@ -13,26 +12,26 @@ info:
   license:
     name: "MIT"
     url: "http://opensource.org/licenses/MIT"
-host: "localhost:5000"
+host: "localhost:30501"
 basePath: "/api/v1"
 schemes:
-- "http"
+  - "http"
 consumes:
-- "application/json"
+  - "application/json"
 produces:
-- "application/json"
+  - "application/json"
 paths:
-  /billings:
+  /evaluate:
     post:
       description: "Resturn.."
-      operationId: "getBilling"
+      operationId: "evaluate"
       parameters:
-      - in: "body"
-        name: "rules"
-        description: "json of rules"
-        required: true
-        schema:
-          $ref: "#/definitions/Data"
+        - in: "body"
+          name: "rules"
+          description: "json of rules"
+          required: true
+          schema:
+            $ref: "#/definitions/Data"
       responses:
         200:
           description: "successful operation"
@@ -59,41 +58,41 @@ definitions:
     example:
       from: "2000-01-23"
       rules:
-      - conditions:
-          all:
-          - fact: "fact"
-            value: "value"
-            operator: "operator"
-          - fact: "fact"
-            value: "value"
-            operator: "operator"
-        event:
-          type: "type"
-          params:
-            fact: 6
-            message: "message"
-            value: 1
-      - conditions:
-          all:
-          - fact: "fact"
-            value: "value"
-            operator: "operator"
-          - fact: "fact"
-            value: "value"
-            operator: "operator"
-        event:
-          type: "type"
-          params:
-            fact: 6
-            message: "message"
-            value: 1
+        - conditions:
+            all:
+              - fact: "fact"
+                value: "value"
+                operator: "operator"
+              - fact: "fact"
+                value: "value"
+                operator: "operator"
+          event:
+            type: "type"
+            params:
+              fact: 6
+              message: "message"
+              value: 1
+        - conditions:
+            all:
+              - fact: "fact"
+                value: "value"
+                operator: "operator"
+              - fact: "fact"
+                value: "value"
+                operator: "operator"
+          event:
+            type: "type"
+            params:
+              fact: 6
+              message: "message"
+              value: 1
       metrics:
-      - name: "name"
-        id: 0
-        url: "url"
-      - name: "name"
-        id: 0
-        url: "url"
+        - name: "name"
+          id: 0
+          url: "url"
+        - name: "name"
+          id: 0
+          url: "url"
       to: "2000-01-23"
   Fact:
     properties:
@@ -117,12 +116,12 @@ definitions:
     example:
       conditions:
         all:
-        - fact: "fact"
-          value: "value"
-          operator: "operator"
-        - fact: "fact"
-          value: "value"
-          operator: "operator"
+          - fact: "fact"
+            value: "value"
+            operator: "operator"
+          - fact: "fact"
+            value: "value"
+            operator: "operator"
       event:
         type: "type"
         params:
@@ -137,12 +136,12 @@ definitions:
           $ref: "#/definitions/Condition"
     example:
       all:
-      - fact: "fact"
-        value: "value"
-        operator: "operator"
-      - fact: "fact"
-        value: "value"
-        operator: "operator"
+        - fact: "fact"
+          value: "value"
+          operator: "operator"
+        - fact: "fact"
+          value: "value"
+          operator: "operator"
   Condition:
     properties:
       fact:

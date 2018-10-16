@@ -2,19 +2,18 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: api-billing
-  name: api-billing
+    app: api-evaluator
+  name: api-evaluator
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: api-billing
+        app: api-evaluator
     spec:
       containers:
-      - name: api-billing
-        image: api_billing_poetisa
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
-
+        - name: api-evaluator
+          image: api_evaluator_poetisa
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

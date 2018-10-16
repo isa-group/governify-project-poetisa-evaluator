@@ -3,9 +3,9 @@
 var utils = require('../../utils/writer.js');
 var Default = require('../../service/DefaultService');
 
-module.exports.getBilling = function getBilling(req, res, next) {
+module.exports.evaluate = function evaluate(req, res, next) {
   var rules = req.swagger.params['rules'].value;
-  Default.getBilling(rules)
+  Default.evaluate(rules)
     .then(function (response) {
       utils.writeJson(res, response);
     })
